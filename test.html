@@ -4,10 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Scanner</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #scanner-container {
+            position: relative;
+            width: 300px; /* Adjust the width as needed */
+            height: 300px; /* Adjust the height as needed */
+            overflow: hidden;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #qr-video {
+            width: 100%;
+            height: 100%;
+        }
+
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <button id="startButton">Start QR Scanner</button>
-    <video id="qr-video" width="100%" height="100%" style="display: none;" autoplay></video>
+    <div id="scanner-container">
+        <button id="startButton">Start QR Scanner</button>
+        <video id="qr-video" style="display: none;" autoplay></video>
+    </div>
+
     <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -42,10 +81,15 @@
 
                         if (code) {
                             alert('QR Code detected: ' + code.data);
-                            // You can handle the QR code data in other ways as needed
+                            // Stop the video stream
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                            // Hide the video element
+                            video.style.display = 'none';
+                            // Show the start button again
+                            startButton.style.display = 'block';
+                        } else {
+                            requestAnimationFrame(scanQRCode);
                         }
-
-                        requestAnimationFrame(scanQRCode);
                     }
 
                     scanQRCode();
